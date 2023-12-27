@@ -5,7 +5,7 @@ jobs:
   default:
     strategy:
       matrix:
-        os: [ubuntu-latest]
+        os: [ubuntu-latest, windows-latest]
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
@@ -13,5 +13,10 @@ jobs:
         with:
           pixi-version: v0.9.1
           cache: true
+      # Workaround for https://github.com/traversaro/pixi_rosdistro/pull/1#issuecomment-1870411671
+      - name: Remove system python3 on Windows
+        if: contains(matrix.os, 'windows') 
+        run: |
+          rmdir /s C:/hostedtoolcache/windows/Python/
       - run: pixi run sync
       - run: pixi run build
